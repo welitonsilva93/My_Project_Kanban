@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .kanban {
+            display: flex;
+            gap: 10px;
+            /* Espaço entre as colunas */
+            padding: 10px;
+            width: 100%;
+            overflow-x: auto;
+            /* Rolagem horizontal se necessário */
+        }
+
+        .column {
+            background-color: #0da2d8;
+            border-radius: 5px;
+            padding: 10px;
+            width: 300px;
+            /* Largura fixa das colunas */
+            flex-shrink: 0;
+            /* Impede que as colunas diminuam */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="kanban">
+        {% for coluna in colunas %}
+        <div class="column">
+            <h2>{{ coluna.title }}</h2>
+            <ul>
+                {% for tarefa in coluna.task_set.all  %}
+                    <li>{{ tarefa.title }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>
