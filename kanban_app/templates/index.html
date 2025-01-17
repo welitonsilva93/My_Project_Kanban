@@ -52,7 +52,7 @@
             <h2>{{ coluna.title }}</h2>
             <ul>
                 {% for tarefa in coluna.task_set.all  %}
-                    <li>{{ tarefa.title }}</li>
+                    <li><a href='{% url 'detail' tarefa.id %}'>{{ tarefa.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>
