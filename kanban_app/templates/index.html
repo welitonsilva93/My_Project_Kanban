@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <title>Home</title>
     <style>
         body {
@@ -18,11 +19,9 @@
         .kanban {
             display: flex;
             gap: 10px;
-            /* Espaço entre as colunas */
             padding: 10px;
             width: 100%;
             overflow-x: auto;
-            /* Rolagem horizontal se necessário */
         }
 
         .column {
@@ -30,9 +29,7 @@
             border-radius: 5px;
             padding: 10px;
             width: 300px;
-            /* Largura fixa das colunas */
             flex-shrink: 0;
-            /* Impede que as colunas diminuam */
             display: flex;
             flex-direction: column;
         }
@@ -40,7 +37,42 @@
         .column h2 {
             margin-top: 0;
             font-size: 1.2em;
-            color: #333;
+            color: #fff;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background-color: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: grab;
+        }
+
+        li.dragging {
+            opacity: 0.5;
+        }
+
+        /* Estilo do popup */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
         }
     </style>
 </head>
@@ -48,16 +80,78 @@
 <body>
     <div class="kanban">
         {% for coluna in colunas %}
-        <div class="column">
+        <div class="column" data-id="{{ coluna.id }}">
             <h2>{{ coluna.title }}</h2>
             <ul>
-                {% for tarefa in coluna.task_set.all  %}
-                    <li><a href='{% url 'detail' tarefa.id %}'>{{ tarefa.title }}</a></li>
+                {% for tarefa in coluna.task_set.all %}
+                <li draggable="true" data-id="{{tarefa.id}}">{{tarefa.title}}</li>
                 {% endfor %}
             </ul>
         </div>
         {% endfor %}
     </div>
+
+    <!-- Popup de sucesso -->
+    <div id="popupSuccess" class="notification">
+        Tarefa movida com sucesso!
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const columns = document.querySelectorAll('.column ul');
+
+            columns.forEach(column => {
+                new Sortable(column, {
+                    group: 'tasks',
+                    animation: 150,
+                    onEnd(evt) {
+                        const taskId = evt.item.dataset.id;
+                        const newColumnId = evt.to.parentElement.dataset.id;  // Alteração: Usando evt.to
+
+                        console.log("Task ID:", taskId);
+                        console.log("New Column ID:", newColumnId);
+
+                        fetch('/atualizar-tarefa/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: JSON.stringify({
+                                task_id: taskId,
+                                column_id: newColumnId
+                            })
+                        }).then(response => response.json())
+                            .then(data => {
+                                if (data.status !== 'success') {
+                                    alert('Erro ao atualizar a tarefa: ' + data.message);
+                                } else {
+                                    // Após a resposta bem-sucedida, atualizar a interface
+                                    const taskElement = document.querySelector(`[data-id="${taskId}"]`);
+                                    const newColumn = document.querySelector(`[data-id="${newColumnId}"] ul`);
+                                    newColumn.appendChild(taskElement);  // Mover a tarefa na interface
+
+                                    // Exibir o popup de sucesso
+                                    showSuccessPopup();
+                                }
+                            })
+                            .catch(error => console.error('Erro na requisição:', error));
+                    }
+                });
+            });
+        });
+
+        // Função para exibir o popup de sucesso
+        function showSuccessPopup() {
+            const popup = document.getElementById('popupSuccess');
+            popup.style.display = 'block'; // Torna o popup visível
+
+            // Faz o popup desaparecer após 3 segundos
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+    </script>
 </body>
 
 </html>

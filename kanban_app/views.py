@@ -1,5 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Columns, Task
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import logging
 
 def home(request):
     coluna = Columns.objects.all()
@@ -12,3 +16,42 @@ def home(request):
 def detail(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     return render(request, 'details.html', {'task': task})
+
+@csrf_exempt
+def atualizar_tarefa(request):
+    logger = logging.getLogger(__name__)
+    logger.info(f"Recebido no backend: {json.loads(request.body)}")
+    if request.method == 'POST':
+        try:
+            dados = json.loads(request.body)
+            logger.info(f"Dados recebidos: {dados}")
+
+            task_id = dados.get('task_id')
+            column_id = dados.get('column_id')
+
+            if not task_id or not column_id:
+                logger.error("ID da tarefa ou coluna ausente")
+                return JsonResponse({'status': 'error', 'message': 'ID da tarefa ou coluna ausente'}, status=400)
+
+            # Obter tarefa e coluna
+            tarefa = Task.objects.get(id=task_id)
+            coluna = Columns.objects.get(id=column_id)
+
+            logger.info(f"Tarefa encontrada: {tarefa}")
+            logger.info(f"Coluna encontrada: {coluna}")
+
+            # Atualizar a coluna
+            tarefa.columns = coluna
+            tarefa.save()
+            logger.info(f"Tarefa {tarefa.id} movida para a coluna {coluna.id}. Salvo no banco com sucesso.")
+
+            return JsonResponse({'status': 'success'})
+        except Task.DoesNotExist:
+            logger.error("Tarefa não encontrada")
+            return JsonResponse({'status': 'error', 'message': 'Tarefa não encontrada'}, status=404)
+        except Columns.DoesNotExist:
+            logger.error("Coluna não encontrada")
+            return JsonResponse({'status': 'error', 'message': 'Coluna não encontrada'}, status=404)
+        except Exception as e:
+            logger.error(f"Erro inesperado: {e}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
