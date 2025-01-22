@@ -14,6 +14,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            background-color: #180025;
         }
 
         .kanban {
@@ -25,19 +26,23 @@
         }
 
         .column {
-            background-color: #0da2d8;
+            background-color: #351e44;
             border-radius: 5px;
             padding: 10px;
             width: 300px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
+            min-height: calc(100vh - 20px); 
+            overflow-y: auto;
+            margin-left: 3px;
+            margin-right: 2px;
         }
 
         .column h2 {
             margin-top: 0;
-            font-size: 1.2em;
-            color: #fff;
+            font-size: 1.6em;
+            color:rgb(229, 204, 244)
         }
 
         ul {
@@ -46,8 +51,15 @@
             margin: 0;
         }
 
+        a{
+            text-decoration: none;
+            color:rgb(0, 0, 0);
+            font-weight: bold;
+            font-size: 1.4em;
+        }
+
         li {
-            background-color: #fff;
+            background-color: rgb(200, 166, 226);
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 5px;
@@ -74,17 +86,39 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 9999;
         }
+
+        .button-add-task {
+            align-content: flex-end;
+            margin-left: 240px;
+            background-color:rgb(170, 127, 202);
+            margin-bottom: 10px;
+            padding: 3px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: grab;
+            font-weight: bold;
+        }
+
+        .button-add-task:hover{
+            background-color:rgb(125, 87, 153);
+        }
+
+        .title-page {
+            color: #d1b5e3;
+        }
     </style>
 </head>
 
 <body>
+    <h1 class='title-page'>Kanban | Controle de Tarefas</h1>
     <div class="kanban">
         {% for coluna in colunas %}
         <div class="column" data-id="{{ coluna.id }}">
+            <button class='button-add-task'>+</button>
             <h2>{{ coluna.title }}</h2>
             <ul>
                 {% for tarefa in coluna.task_set.all %}
-                <li draggable="true" data-id="{{tarefa.id}}">{{tarefa.title}}</li>
+                <li draggable="true" data-id="{{tarefa.id}}"><a href='{% url 'detail' tarefa.id %}'>{{ tarefa.title }}</a></li>
                 {% endfor %}
             </ul>
         </div>
