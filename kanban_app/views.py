@@ -1,9 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Columns, Task
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import logging
+from .forms import TaskForms
+
 
 def home(request):
     coluna = Columns.objects.all()
@@ -55,3 +57,15 @@ def atualizar_tarefa(request):
         except Exception as e:
             logger.error(f"Erro inesperado: {e}")
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+def criar_tarefa(request):
+    if request.method == 'POST':
+        form =  TaskForms(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = TaskForms()
+
+    return render(request, 'criar_tarefa.html', {'form':form})
