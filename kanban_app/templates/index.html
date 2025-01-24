@@ -14,70 +14,77 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #180025;
+            background-color: #f7f7f7; /* Cinza claro */
         }
-
+    
         .kanban {
             display: flex;
-            gap: 10px;
-            padding: 10px;
+            gap: 15px; /* Espaçamento maior entre as colunas */
+            padding: 17px;
             width: 100%;
             overflow-x: auto;
+            box-sizing: border-box; /* Garante que o padding seja contabilizado no tamanho total */
         }
-
+    
         .column {
-            background-color: #351e44;
-            border-radius: 5px;
-            padding: 10px;
+            background-color: #f0f8ff; /* Azul muito claro */
+            border: 1px solid #d0d7de; /* Borda cinza suave */
+            border-radius: 8px; /* Bordas levemente arredondadas */
+            padding: 15px; /* Espaçamento interno maior */
             width: 300px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
-            min-height: calc(100vh - 20px); 
+            min-height: calc(100vh - 40px);
             overflow-y: auto;
-            margin-left: 3px;
-            margin-right: 2px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra mais visível */
+            transition: transform 0.2s, box-shadow 0.2s; /* Animação suave */
         }
-
+    
+        .column:hover {
+            transform: scale(1.02); /* Efeito de zoom ao passar o mouse */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra mais intensa no hover */
+        }
+    
         .column h2 {
             margin-top: 0;
             font-size: 1.6em;
-            color:rgb(229, 204, 244)
+            color: #333333; /* Cinza escuro */
         }
-
+    
         ul {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-
-        a{
+    
+        a {
             text-decoration: none;
-            color:rgb(0, 0, 0);
+            color: #0056b3; /* Azul escuro suave */
             font-weight: bold;
             font-size: 1.4em;
         }
-
+    
         li {
-            background-color: rgb(200, 166, 226);
+            background-color: #ffffff; /* Fundo branco para contraste */
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra leve */
             cursor: grab;
+            color: #333333; /* Texto em cinza escuro */
         }
-
+    
         li.dragging {
-            opacity: 0.5;
+            opacity: 0.7;
         }
-
-        /* Estilo do popup */
+    
         .notification {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #28a745;
+            background-color: #28a745; /* Verde suave */
             color: #fff;
             padding: 10px 20px;
             border-radius: 5px;
@@ -86,27 +93,30 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             z-index: 9999;
         }
-
+    
         .button-add-task {
             align-content: flex-end;
-            margin-left: 240px;
-            background-color:rgb(170, 127, 202);
+            margin-left: auto;
+            background-color: #0056b3; /* Azul escuro */
             margin-bottom: 10px;
-            padding: 3px;
+            padding: 8px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            cursor: grab;
+            color: #ffffff; /* Texto branco */
             font-weight: bold;
+            text-align: center;
         }
-
-        .button-add-task:hover{
-            background-color:rgb(125, 87, 153);
+    
+        .button-add-task:hover {
+            background-color: #004099; /* Azul mais escuro no hover */
         }
-
+    
         .title-page {
-            color: #d1b5e3;
+            color: #333333; /* Cinza escuro */
+            font-weight: bold;
+            font-size: 35px;
+            margin-bottom: 20px;
         }
-    </style>
+    </style>    
 </head>
 
 <body>
@@ -114,7 +124,7 @@
     <div class="kanban">
         {% for coluna in colunas %}
         <div class="column" data-id="{{ coluna.id }}">
-            <button class='button-add-task'>+</button>
+            <a class='button-add-task' href='{% url 'criar_tarefa' %}'>+</a>
             <h2>{{ coluna.title }}</h2>
             <ul>
                 {% for tarefa in coluna.task_set.all %}
