@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir Tarefa</title>
+    <style>
+        .delete-confirmation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #ffffff; /* Fundo branco */
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra leve */
+            max-width: 500px;
+            margin: 50px auto; /* Centralizado na tela */
+        }
+        
+        .delete-confirmation p {
+            font-size: 18px;
+            color: #333333; /* Cinza escuro */
+            margin: 15px 0;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        
+        .btn-danger {
+            background-color: #d9534f; /* Vermelho */
+            color: #ffffff;
+            border: none;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c9302c; /* Vermelho mais escuro no hover */
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d; /* Cinza */
+            color: #ffffff;
+            border: none;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268; /* Cinza mais escuro no hover */
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="delete-confirmation">
+        <h1 class="title-page">Confirmação de Exclusão</h1>
+        <p>Tem certeza que deseja excluir a tarefa: <strong>{{ task.title }}</strong>?</p>
+    
+        <form method="POST" class="form-actions">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sim, excluir</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>

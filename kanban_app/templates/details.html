@@ -12,12 +12,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #24b399;
+            background-color: #f7f7f7;;
             color: #d1b5e3;
         }
 
         .task-details {
-            background-color: rgb(239, 193, 27);
+            background-color: #f0f8ff;
             border-radius: 5px;
             padding: 20px;
             width: 100%;
@@ -40,7 +40,7 @@
         .back-link {
             text-decoration: none;
             color:rgb(1, 16, 13);
-            background-color: rgb(239, 193, 27);
+            background-color: #f0f8ff;
             padding: 10px 15px;
             border-radius: 5px;
             font-size: 1em;
@@ -50,16 +50,36 @@
         }
 
         .back-link:hover {
-            background-color: rgb(230, 219, 176);
+            background-color:rgb(147, 203, 253);
         }
 
         .task-title {
             margin-bottom: 15px;
         }
+
+        .button-remove-task {
+            align-content: flex-end;
+            margin-left: 499px;
+            margin-top: 20px; /* Adicionando margem superior */
+            background-color: rgb(212, 58, 58);
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            color:rgb(255, 255, 255);
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .button-remove-task:hover {
+            background-color:rgb(214, 82, 82);
+        }
     </style>
 </head>
 <body>
     <div class="task-details">
+        <a href="{% url 'remover_tarefa' task.id %}" class="button-remove-task">Excluir 🗑</a>
         <h1 class="task-title">{{ task.title }}</h1>
         <h2 class="task-description">{{ task.descricao }}</h2>
     </div>

@@ -24,10 +24,16 @@
             width: 100%;
             overflow-x: auto;
             box-sizing: border-box; /* Garante que o padding seja contabilizado no tamanho total */
+            cursor: grab; /* Cursor para indicar o modo de arraste */
+            white-space: nowrap;
         }
-    
+
+        kanban:active {
+            cursor: grabbing; /* Cursor ao segurar o mouse */
+        }
+
         .column {
-            background-color: #f0f8ff; /* Azul muito claro */
+            background-color:rgb(222, 237, 252); /* Azul muito claro */
             border: 1px solid #d0d7de; /* Borda cinza suave */
             border-radius: 8px; /* Bordas levemente arredondadas */
             padding: 15px; /* Espaçamento interno maior */
@@ -73,8 +79,18 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra leve */
             cursor: grab;
             color: #333333; /* Texto em cinza escuro */
+            display: flex; /* Para permitir que o conteúdo se ajuste automaticamente */
+            flex-direction: column; /* Organizar o conteúdo do li */
+            justify-content: center; /* Alinha o texto verticalmente */
+            white-space: normal; /* Permite que o texto quebre em várias linhas */
+            word-wrap: break-word; /* Quebra palavras longas */
+            overflow-wrap: break-word; /* Garantia adicional de quebra de texto */
         }
-    
+        
+        li:hover {
+            background-color: rgb(207, 229, 255); 
+        }
+        
         li.dragging {
             opacity: 0.7;
         }
@@ -111,10 +127,19 @@
         }
     
         .title-page {
-            color: #333333; /* Cinza escuro */
-            font-weight: bold;
-            font-size: 35px;
-            margin-bottom: 20px;
+            color: #fff; /* Cor branca para contrastar com o fundo */
+            font-weight: bold; /* Negrito mais forte */
+            font-size: 35px; /* Aumentei mais o tamanho */
+            text-align: center;
+            margin-bottom: 30px; /* Maior espaçamento inferior */
+            font-family: 'Roboto', sans-serif; /* Fonte moderna */
+            text-transform: uppercase; /* Título em maiúsculas */
+            letter-spacing: 3px; /* Maior espaçamento entre as letras */
+            background: #0da2d8; /* Fundo com cor vibrante */
+            padding: 15px 30px; /* Preenche mais ao redor do texto */
+            border-radius: 10px; /* Bordas arredondadas */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra suave para dar profundidade */
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15); /* Sombra do texto mais intensa */
         }
     </style>    
 </head>
@@ -135,7 +160,7 @@
         {% endfor %}
     </div>
 
-    <!-- Popup de sucesso -->
+    
     <div id="popupSuccess" class="notification">
         Tarefa movida com sucesso!
     </div>
@@ -150,7 +175,7 @@
                     animation: 150,
                     onEnd(evt) {
                         const taskId = evt.item.dataset.id;
-                        const newColumnId = evt.to.parentElement.dataset.id;  // Alteração: Usando evt.to
+                        const newColumnId = evt.to.parentElement.dataset.id;  
 
                         console.log("Task ID:", taskId);
                         console.log("New Column ID:", newColumnId);
@@ -170,12 +195,12 @@
                                 if (data.status !== 'success') {
                                     alert('Erro ao atualizar a tarefa: ' + data.message);
                                 } else {
-                                    // Após a resposta bem-sucedida, atualizar a interface
+                                    
                                     const taskElement = document.querySelector(`[data-id="${taskId}"]`);
                                     const newColumn = document.querySelector(`[data-id="${newColumnId}"] ul`);
-                                    newColumn.appendChild(taskElement);  // Mover a tarefa na interface
+                                    newColumn.appendChild(taskElement);  
 
-                                    // Exibir o popup de sucesso
+                                    
                                     showSuccessPopup();
                                 }
                             })
@@ -185,16 +210,47 @@
             });
         });
 
-        // Função para exibir o popup de sucesso
+       
         function showSuccessPopup() {
             const popup = document.getElementById('popupSuccess');
-            popup.style.display = 'block'; // Torna o popup visível
+            popup.style.display = 'block'; 
 
-            // Faz o popup desaparecer após 3 segundos
+            
             setTimeout(() => {
                 popup.style.display = 'none';
             }, 3000);
         }
+        
+        const kanban = document.querySelector(".kanban");
+
+        let isDown = false; 
+        let startX; 
+        let scrollLeft; 
+
+        kanban.addEventListener("mousedown", (e) => {
+            isDown = true;
+            kanban.classList.add("active");
+            startX = e.pageX - kanban.offsetLeft;
+            scrollLeft = kanban.scrollLeft;
+        });
+
+        kanban.addEventListener("mouseleave", () => {
+            isDown = false;
+            kanban.classList.remove("active");
+        });
+
+        kanban.addEventListener("mouseup", () => {
+            isDown = false;
+            kanban.classList.remove("active");
+        });
+
+        kanban.addEventListener("mousemove", (e) => {
+            if (!isDown) return; 
+            e.preventDefault(); 
+            const x = e.pageX - kanban.offsetLeft;
+            const walk = (x - startX) * 1.5; 
+            kanban.scrollLeft = scrollLeft - walk;
+        });
     </script>
 </body>
 
