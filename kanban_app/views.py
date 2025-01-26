@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import logging
 from .forms import TaskForms
+from django.contrib import messages
+
 
 
 def home(request):
@@ -69,3 +71,15 @@ def criar_tarefa(request):
         form = TaskForms()
 
     return render(request, 'criar_tarefa.html', {'form':form})
+
+def remover_tarefa(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    if request.method == 'POST':
+        task.delete()
+        messages.success(request, 'Tarefa Removida com Sucesso')
+        
+        return redirect('home')
+
+
+    return render(request, 'confirm_delete.html', {'task': task})
