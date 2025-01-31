@@ -14,29 +14,29 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f7f7f7; /* Cinza claro */
+            background-color: #f7f7f7; 
         }
     
         .kanban {
             display: flex;
-            gap: 15px; /* Espaçamento maior entre as colunas */
+            gap: 15px; 
             padding: 17px;
             width: 100%;
             overflow-x: auto;
-            box-sizing: border-box; /* Garante que o padding seja contabilizado no tamanho total */
-            cursor: grab; /* Cursor para indicar o modo de arraste */
+            box-sizing: border-box; 
+            cursor: grab; 
             white-space: nowrap;
         }
 
         kanban:active {
-            cursor: grabbing; /* Cursor ao segurar o mouse */
+            cursor: grabbing; 
         }
 
         .column {
-            background-color:rgb(222, 237, 252); /* Azul muito claro */
-            border: 1px solid #d0d7de; /* Borda cinza suave */
-            border-radius: 8px; /* Bordas levemente arredondadas */
-            padding: 15px; /* Espaçamento interno maior */
+            background-color:rgb(222, 237, 252); 
+            border: 1px solid #d0d7de; 
+            border-radius: 8px; 
+            padding: 15px; 
             width: 300px;
             flex-shrink: 0;
             display: flex;
@@ -55,7 +55,7 @@
         .column h2 {
             margin-top: 0;
             font-size: 1.6em;
-            color: #333333; /* Cinza escuro */
+            color: #333333; 
         }
     
         ul {
@@ -66,29 +66,29 @@
     
         a {
             text-decoration: none;
-            color: #0056b3; /* Azul escuro suave */
+            color:rgb(12, 77, 143); 
             font-weight: bold;
             font-size: 1.4em;
         }
     
         li {
-            background-color: #ffffff; /* Fundo branco para contraste */
+            background-color: #ffffff; 
             margin-bottom: 10px;
             padding: 10px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra leve */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
             cursor: grab;
-            color: #333333; /* Texto em cinza escuro */
-            display: flex; /* Para permitir que o conteúdo se ajuste automaticamente */
-            flex-direction: column; /* Organizar o conteúdo do li */
-            justify-content: center; /* Alinha o texto verticalmente */
-            white-space: normal; /* Permite que o texto quebre em várias linhas */
-            word-wrap: break-word; /* Quebra palavras longas */
-            overflow-wrap: break-word; /* Garantia adicional de quebra de texto */
+            color: #333333; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            white-space: normal; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
         }
         
         li:hover {
-            background-color: rgb(207, 229, 255); 
+            border: 1px solid #3498db; 
         }
         
         li.dragging {
@@ -100,7 +100,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #28a745; /* Verde suave */
+            background-color: #28a745; 
             color: #fff;
             padding: 10px 20px;
             border-radius: 5px;
@@ -113,33 +113,33 @@
         .button-add-task {
             align-content: flex-end;
             margin-left: auto;
-            background-color: #0056b3; /* Azul escuro */
+            background-color: #0056b3; 
             margin-bottom: 10px;
             padding: 8px;
             border-radius: 5px;
-            color: #ffffff; /* Texto branco */
+            color: #ffffff; 
             font-weight: bold;
             text-align: center;
         }
     
         .button-add-task:hover {
-            background-color: #004099; /* Azul mais escuro no hover */
+            background-color: #004099; 
         }
     
         .title-page {
-            color: #fff; /* Cor branca para contrastar com o fundo */
-            font-weight: bold; /* Negrito mais forte */
-            font-size: 35px; /* Aumentei mais o tamanho */
+            color: #fff; 
+            font-weight: bold; 
+            font-size: 34px; 
             text-align: center;
-            margin-bottom: 30px; /* Maior espaçamento inferior */
-            font-family: 'Roboto', sans-serif; /* Fonte moderna */
-            text-transform: uppercase; /* Título em maiúsculas */
-            letter-spacing: 3px; /* Maior espaçamento entre as letras */
-            background: #0da2d8; /* Fundo com cor vibrante */
-            padding: 15px 30px; /* Preenche mais ao redor do texto */
-            border-radius: 10px; /* Bordas arredondadas */
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra suave para dar profundidade */
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15); /* Sombra do texto mais intensa */
+            margin-bottom: 30px; 
+            font-family: 'Roboto', sans-serif; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            background: #0da2d8; 
+            padding: 15px 30px; 
+            border-radius: 10px; 
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15); 
         }
     </style>    
 </head>
@@ -166,6 +166,7 @@
     </div>
 
     <script>
+        let isDraggingTask = false;
         document.addEventListener('DOMContentLoaded', () => {
             const columns = document.querySelectorAll('.column ul');
 
@@ -173,12 +174,27 @@
                 new Sortable(column, {
                     group: 'tasks',
                     animation: 150,
+
+                    onStart() {
+                        isDraggingTask = true;
+                    },
+
                     onEnd(evt) {
+                        
+                        isDraggingTask = false;
+
                         const taskId = evt.item.dataset.id;
+                        const oldColumnId = evt.from.parentElement.dataset.id;
                         const newColumnId = evt.to.parentElement.dataset.id;  
 
                         console.log("Task ID:", taskId);
+                        console.log("Old Column Id", oldColumnId);
                         console.log("New Column ID:", newColumnId);
+
+                        if (oldColumnId == newColumnId) {
+                            console.log("Tarefa não movida, mantendo na mesma fase.");
+                            return;
+                        }
 
                         fetch('/atualizar-tarefa/', {
                             method: 'POST',
@@ -228,6 +244,7 @@
         let scrollLeft; 
 
         kanban.addEventListener("mousedown", (e) => {
+            if (isDraggingTask) return;
             isDown = true;
             kanban.classList.add("active");
             startX = e.pageX - kanban.offsetLeft;
@@ -239,16 +256,16 @@
             kanban.classList.remove("active");
         });
 
-        kanban.addEventListener("mouseup", () => {
+        document.addEventListener("mouseup", () => { 
             isDown = false;
             kanban.classList.remove("active");
         });
 
         kanban.addEventListener("mousemove", (e) => {
-            if (!isDown) return; 
-            e.preventDefault(); 
+            if (!isDown || isDraggingTask) return;
+            e.preventDefault();
             const x = e.pageX - kanban.offsetLeft;
-            const walk = (x - startX) * 1.5; 
+            const walk = (x - startX) * 1.5;
             kanban.scrollLeft = scrollLeft - walk;
         });
     </script>
