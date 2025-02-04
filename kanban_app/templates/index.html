@@ -11,10 +11,53 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            background-color: #f7f7f7; 
+            background: #0da2d8;
+            padding: 15px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .title {
+            color: #fff;
+            font-weight: bold;
+            font-size: 35px;
+            font-family: 'Roboto', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 200px;
+            outline: none;
+        }
+
+        .search-button {
+            background: #0056b3;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-button:hover {
+            background: #004099;
         }
     
         .kanban {
@@ -66,9 +109,10 @@
     
         a {
             text-decoration: none;
-            color:rgb(12, 77, 143); 
+            color:rgb(74, 74, 74); 
             font-weight: bold;
             font-size: 1.4em;
+            text-decoration: none;
         }
     
         li {
@@ -84,7 +128,8 @@
             justify-content: center; 
             white-space: normal; 
             word-wrap: break-word; 
-            overflow-wrap: break-word; 
+            overflow-wrap: break-word;
+            text-decoration: none; 
         }
         
         li:hover {
@@ -141,11 +186,59 @@
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.15); 
         }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background:rgb(222, 237, 252); 
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    
+        .login-container p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+    
+        .login-container a {
+            background:rgb(0, 0, 0);
+            color: rgb(255, 255, 255);
+            padding: 8px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+            font-size: 14px;
+        }
+    
+        .login-container a:hover {
+            background:rgb(196, 0, 0);
+        }
     </style>    
 </head>
 
 <body>
-    <h1 class='title-page'>Kanban | Controle de Tarefas</h1>
+
+    <div class="header">
+        <div class="login-container">
+            {% if user.is_authenticated %}
+                <p>Bem-vindo, {{ user.first_name }} {{ user.last_name }}</p>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+        <div class="title">Kanban</div>
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Buscar...">
+            <button class="search-button">Pesquisar</button>
+        </div>
+    </div>
+
     <div class="kanban">
         {% for coluna in colunas %}
         <div class="column" data-id="{{ coluna.id }}">
