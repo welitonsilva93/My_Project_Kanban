@@ -6,6 +6,8 @@ import json
 import logging
 from .forms import TaskForms
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+
 
 
 
@@ -83,3 +85,22 @@ def remover_tarefa(request, task_id):
 
 
     return render(request, 'confirm_delete.html', {'task': task})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            return render(request, 'login.html', {'error': 'Usuário ou Senha inválidos'})
+        
+    return render(request, 'login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
